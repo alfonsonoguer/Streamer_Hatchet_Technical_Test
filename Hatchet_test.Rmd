@@ -14,7 +14,9 @@ output:
 
 ---
 
-
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
 
 ****
 
@@ -48,8 +50,7 @@ First we need to create our tables.
 
 <br>
 
-
-```sql
+``````{sql, eval=F, echo=T}
 CREATE TABLE `streamers` (
   `username` varchar(64) NOT NULL,
   `timestamp` datetime NOT NULL,
@@ -59,8 +60,7 @@ CREATE TABLE `streamers` (
 );
 ```
 
-
-```sql
+``````{sql, eval=F, echo=T}
 CREATE TABLE `games_metadata`(
     `game` varchar(64) NOT NULL,
     `release_date` datetime NOT NULL, 
@@ -82,8 +82,7 @@ CREATE TABLE `games_metadata`(
 
 <br>
 
-
-```sql
+``````{sql, eval=F, echo=T} 
 SELECT  strftime('%m',`timestamp`) as months ,COUNT(DISTINCT username) as `unique_streamers`, COUNT( strftime('%M',`timestamp`))/(60*1.0) as hours_broadcast FROM streamers where strftime('%Y',`timestamp`) = '2018' GROUP BY months 
 ```
 
@@ -104,8 +103,7 @@ My approach was to count all rows (duplicates included, the datetime format does
 <br>
 
 
-
-```sql
+``````{sql, eval=F, echo=T}
 SELECT username, ((MAX(followers)*1.0-MIN(followers)*1.0)/MIN(followers)*1.0) AS follower_growth FROM (SELECT username,followers, genre, "timestamp" FROM (SELECT * FROM streamers AS A INNER JOIN games_metadata AS B ON A.game = B.game) WHERE strftime('%Y',"timestamp") = '2019' and strftime('%m',"timestamp") = '01' and genre = 'FPS') GROUP BY usernameOrder by follower_growth DESC LIMIT 10 
 ```
 
@@ -147,8 +145,7 @@ And of course we need to aggregate and order the data as requested.
 
 <br>
 
-
-```sql
+```{sql, eval=F, echo=T}
 SELECT publisher, (cast(strftime('%m', "timestamp") as integer) + 2) / 3 as quarter, COUNT((strftime('%M',`timestamp`)/(60*1.0)) * viewers) as total_hours_watch
 FROM streamers AS A INNER JOIN games_metadata AS B ON A.game = B.game 
 WHERE quarter = 1
@@ -200,8 +197,8 @@ They aren't in the extremes so we fill them and the vector is (3,3,3,3,3,3,3) an
 And because the maximum value and the minimum value of the vector are the same we finish the process 
 
 
+```{r echo=TRUE}
 
-```r
 altura <- c(2,2,5,2,6,1,4,3,4,2)
 
 water_height <- function(alturas){
@@ -229,9 +226,7 @@ water_height <- function(alturas){
 }
  
 water_height(altura)
-```
 
-```
-## [1] 7
+
 ```
 
